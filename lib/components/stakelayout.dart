@@ -5,6 +5,7 @@ import 'dart:js_util';
 import 'package:decimal/decimal.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_web3_provider/ethereum.dart';
 import 'package:flutter_web3_provider/ethers.dart';
 // import 'package:web3dart/credentials.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_web3_provider/ethers.dart';
 
 import 'utils.dart';
 
+//Abi for mDai
 const erc20Abi = [
   "event Transfer(address indexed _from, address indexed _to, uint _value)",
   "event Approval(address indexed _owner, address indexed _spender, uint _value)",
@@ -26,6 +28,7 @@ const erc20Abi = [
   "function allowance(address _owner, address _spender) public view returns (uint remaining)",
 ];
 
+//Abi for Staking contract
 const TokenFarmAbi = [
   "function stakeToken(uint _amount) public",
   "function unstakeToken() public",
@@ -33,6 +36,7 @@ const TokenFarmAbi = [
   "function issueToken() public",
 ];
 
+//Abi for Staking contract
 const NormiTokenAbi = [
   "event Transfer(address indexed _from, address indexed _to, uint _value)",
   "event Approval(address indexed _owner, address indexed _spender, uint _value)",
@@ -72,6 +76,7 @@ class _StakeLayoutState extends State<StakeLayout> {
 
   var approveContract;
 
+//for read-write provider (ie: metamask)
   @override
   void initState() {
     super.initState();
@@ -89,7 +94,89 @@ class _StakeLayoutState extends State<StakeLayout> {
           callMethod(rewardContract, "balanceOf", [ethereum.selectedAddress]));
     }
   }
-  //for read-write provider (ie: metamask)
+
+  //Logic for textfield(under-review)
+  TextEditingController _textEditingController = TextEditingController();
+
+  String codeDialog;
+  String valueText;
+
+  Future<void> _displayTextInputDialog(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Staking Amount'),
+            content: TextField(
+              inputFormatters: [
+                //Regular expressions to only handle decimals
+                FilteringTextInputFormatter.allow(
+                    RegExp('^\$|^(0|([1-9][0-9]{0,}))(\\.[0-9]{0,})?\$'))
+              ],
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              onChanged: (value) {
+                setState(() {
+                  valueText = value;
+                });
+              },
+              controller: _textEditingController,
+              decoration: InputDecoration(hintText: "Type Amount To Stake"),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    setState(() {
+                      Navigator.pop(context);
+                    });
+                  },
+                  child: Text("CANCEL")),
+              TextButton(
+                onPressed: () async {
+                  setState(() {
+                    codeDialog = valueText;
+                    Navigator.pop(context);
+                  });
+                  var contract = Contract(mDaiTokenAddress, erc20Abi, web3);
+                  var contract2 = contract.connect(web3.getSigner());
+                  try {
+                    var res =
+                        await promiseToFuture(callMethod(contract2, "approve", [
+                      TokenFarmAddress,
+                      "0x" +
+                          BigInt.parse(toBase(Decimal.parse("$codeDialog"), 6)
+                                  .toString())
+                              .toRadixString(16)
+                    ]));
+                    print("Transferred: ${res.toString()}");
+                  } catch (e) {
+                    print("EXCEPTION:" + e.toString());
+                  }
+
+                  //This is to interact with the staking function
+
+                  // THIS STILL RUNS IF ABOVE CODE FAILS. CHANGE THAT
+                  var contract3 =
+                      Contract(tokenFarmAddress, TokenFarmAbi, web3);
+                  var contract4 = contract3.connect(web3.getSigner());
+                  try {
+                    var res = await promiseToFuture(
+                        callMethod(contract4, "stakeToken", [
+                      "0x" +
+                          BigInt.parse(toBase(Decimal.parse("$codeDialog"), 6)
+                                  .toString())
+                              .toRadixString(16)
+                    ]));
+                    print("Transferred: ${res.toString()}");
+                  } catch (e) {
+                    print("EXCEPTION:" + e.toString());
+                  }
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -262,44 +349,7 @@ class _StakeLayoutState extends State<StakeLayout> {
                                     borderRadius: BorderRadius.circular(10))),
                             child: Text('Stake'),
                             onPressed: () async {
-                              //This is to interact with the approve function
-                              var contract =
-                                  Contract(mDaiTokenAddress, erc20Abi, web3);
-                              var contract2 =
-                                  contract.connect(web3.getSigner());
-                              try {
-                                var res = await promiseToFuture(
-                                    callMethod(contract2, "approve", [
-                                  TokenFarmAddress,
-                                  "0x" +
-                                      BigInt.parse(
-                                              toBase(Decimal.parse("0.01"), 6)
-                                                  .toString())
-                                          .toRadixString(16)
-                                ]));
-                                print("Transferred: ${res.toString()}");
-                              } catch (e) {
-                                print("EXCEPTION:" + e.toString());
-                              }
-
-                              //This is to interact with the staking function
-                              var contract3 = Contract(
-                                  tokenFarmAddress, TokenFarmAbi, web3);
-                              var contract4 =
-                                  contract3.connect(web3.getSigner());
-                              try {
-                                var res = await promiseToFuture(
-                                    callMethod(contract4, "stakeToken", [
-                                  "0x" +
-                                      BigInt.parse(
-                                              toBase(Decimal.parse("0.01"), 6)
-                                                  .toString())
-                                          .toRadixString(16)
-                                ]));
-                                print("Transferred: ${res.toString()}");
-                              } catch (e) {
-                                print("EXCEPTION:" + e.toString());
-                              }
+                              _displayTextInputDialog(context);
                             },
                           ),
                         ),
