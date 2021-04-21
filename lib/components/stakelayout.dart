@@ -6,6 +6,7 @@ import 'package:decimal/decimal.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'package:flutter_web3_provider/ethereum.dart';
 import 'package:flutter_web3_provider/ethers.dart';
 // import 'package:web3dart/credentials.dart';
@@ -138,37 +139,38 @@ class _StakeLayoutState extends State<StakeLayout> {
                   });
                   var contract = Contract(mDaiTokenAddress, erc20Abi, web3);
                   var contract2 = contract.connect(web3.getSigner());
-                  try {
-                    var res =
-                        await promiseToFuture(callMethod(contract2, "approve", [
+                  var contract3 =
+                      Contract(tokenFarmAddress, TokenFarmAbi, web3);
+
+                  Future<void> res() async {
+                    await promiseToFuture(callMethod(contract2, "approve", [
                       TokenFarmAddress,
                       "0x" +
                           BigInt.parse(toBase(Decimal.parse("$codeDialog"), 6)
                                   .toString())
                               .toRadixString(16)
                     ]));
-                    print("Transferred: ${res.toString()}");
-                  } catch (e) {
-                    print("EXCEPTION:" + e.toString());
                   }
 
                   //This is to interact with the staking function
 
                   // THIS STILL RUNS IF ABOVE CODE FAILS. CHANGE THAT
-                  var contract3 =
-                      Contract(tokenFarmAddress, TokenFarmAbi, web3);
-                  var contract4 = contract3.connect(web3.getSigner());
-                  try {
-                    var res = await promiseToFuture(
-                        callMethod(contract4, "stakeToken", [
+
+                  Future<void> res2() async {
+                    var contract4 = contract3.connect(web3.getSigner());
+
+                    await promiseToFuture(callMethod(contract4, "stakeToken", [
                       "0x" +
                           BigInt.parse(toBase(Decimal.parse("$codeDialog"), 6)
                                   .toString())
                               .toRadixString(16)
                     ]));
-                    print("Transferred: ${res.toString()}");
+                  }
+
+                  try {
+                    Future.wait([res()]).then((value) => {res2()});
                   } catch (e) {
-                    print("EXCEPTION:" + e.toString());
+                    print("Exception:" + e.toString());
                   }
                 },
                 child: Text("OK"),
@@ -250,7 +252,7 @@ class _StakeLayoutState extends State<StakeLayout> {
                             }
                             var big = BigInt.parse(snapshot.data.toString());
                             var d = toDecimal(big, 6);
-                            return Text("$d");
+                            return Text("$d mDai");
                           },
                         ),
                         Spacer(),
@@ -265,7 +267,7 @@ class _StakeLayoutState extends State<StakeLayout> {
                             }
                             var big = BigInt.parse(snapshot.data.toString());
                             var d = toDecimal(big, 6);
-                            return Text("$d");
+                            return Text("$d NRM");
                           },
                         ),
                       ],
