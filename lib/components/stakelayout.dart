@@ -191,7 +191,7 @@ class _StakeLayoutState extends State<StakeLayout> {
     return isConnected
         ? Center(
             child: Container(
-              child: Text("Please Connect Wallet"),
+              child: Text("Please Connect Wallet and refresh"),
             ),
           )
         : Container(
