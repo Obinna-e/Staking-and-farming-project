@@ -194,43 +194,96 @@ class _StakeLayoutState extends State<StakeLayout> {
               child: Text("Please Connect Wallet and refresh"),
             ),
           )
-        : Container(
-            padding: EdgeInsets.only(
-              left: h1,
-              right: h1,
-              top: h2,
-              bottom: h2,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                  child: Container(
-                    height: 400,
-                    width: 700,
-                    padding: EdgeInsets.all(15.0),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(30.0),
-                          child: Row(
-                            children: [
-                              Text(
-                                'Staked Tokens',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w200),
-                              ),
-                              Spacer(),
-                              IconButton(
-                                  icon: Icon(Icons.refresh), onPressed: () {}),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Row(children: [
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Container(
+                  height: 400,
+                  width: 700,
+                  padding: EdgeInsets.all(15.0),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(30.0),
+                        child: Row(
+                          children: [
                             Text(
-                              'Current Stake',
+                              'Staked Tokens',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w200),
+                            ),
+                            Spacer(),
+                            IconButton(
+                                icon: Icon(Icons.refresh), onPressed: () {}),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Row(children: [
+                          Text(
+                            'Current Stake',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                            ),
+                          ),
+                          Spacer(),
+                          Text(
+                            'Accumulated Rewards',
+                            style: TextStyle(
+                              color: Colors.blueGrey,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w200,
+                            ),
+                          )
+                        ]),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Row(
+                          children: [
+                            FutureBuilder(
+                              future: stakingBalance,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return Text("error: ${snapshot.error}");
+                                }
+                                if (!snapshot.hasData) {
+                                  return CircularProgressIndicator();
+                                }
+                                var big =
+                                    BigInt.parse(snapshot.data.toString());
+                                var d = toDecimal(big, 6);
+                                return Text("$d mDai");
+                              },
+                            ),
+                            Spacer(),
+                            FutureBuilder(
+                              future: rewardBalance,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return Text("error: ${snapshot.error}");
+                                }
+                                if (!snapshot.hasData) {
+                                  return CircularProgressIndicator();
+                                }
+                                var big =
+                                    BigInt.parse(snapshot.data.toString());
+                                var d = toDecimal(big, 6);
+                                return Text("$d NRM");
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Row(
+                          children: [
+                            Text(
+                              "Total Balance",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 20,
@@ -238,189 +291,128 @@ class _StakeLayoutState extends State<StakeLayout> {
                             ),
                             Spacer(),
                             Text(
-                              'Accumulated Rewards',
+                              'Reward APY',
                               style: TextStyle(
                                 color: Colors.blueGrey,
                                 fontSize: 20,
                                 fontWeight: FontWeight.w200,
                               ),
                             )
-                          ]),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Row(
-                            children: [
-                              FutureBuilder(
-                                future: stakingBalance,
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasError) {
-                                    return Text("error: ${snapshot.error}");
-                                  }
-                                  if (!snapshot.hasData) {
-                                    return CircularProgressIndicator();
-                                  }
-                                  var big =
-                                      BigInt.parse(snapshot.data.toString());
-                                  var d = toDecimal(big, 6);
-                                  return Text("$d mDai");
-                                },
-                              ),
-                              Spacer(),
-                              FutureBuilder(
-                                future: rewardBalance,
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasError) {
-                                    return Text("error: ${snapshot.error}");
-                                  }
-                                  if (!snapshot.hasData) {
-                                    return CircularProgressIndicator();
-                                  }
-                                  var big =
-                                      BigInt.parse(snapshot.data.toString());
-                                  var d = toDecimal(big, 6);
-                                  return Text("$d NRM");
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Row(
-                            children: [
-                              Text(
-                                "Total Balance",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                ),
-                              ),
-                              Spacer(),
-                              Text(
-                                'Reward APY',
-                                style: TextStyle(
-                                  color: Colors.blueGrey,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w200,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Row(
-                            children: [
-                              FutureBuilder(
-                                future: mdaiBalance,
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasError) {
-                                    return Text("error: ${snapshot.error}");
-                                  }
-                                  if (!snapshot.hasData) {
-                                    return CircularProgressIndicator();
-                                  }
-                                  //Convert snapshot value to decimal
-                                  var big =
-                                      BigInt.parse(snapshot.data.toString());
-                                  var d = toDecimal(big, 6);
-                                  return Text("$d");
-                                },
-                              ),
-                              Spacer(),
-                              Text(
-                                '200%',
-                                style: TextStyle(
-                                  color: Colors.deepPurple[200],
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w200,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Text(
-                            'When you add or remove funds the rewards earned will be added to the current staked amount and the rewards balance will be reset.',
-                            style: TextStyle(
-                              color: Colors.blueGrey,
-                              fontSize: 15,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Row(
+                          children: [
+                            FutureBuilder(
+                              future: mdaiBalance,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return Text("error: ${snapshot.error}");
+                                }
+                                if (!snapshot.hasData) {
+                                  return CircularProgressIndicator();
+                                }
+                                //Convert snapshot value to decimal
+                                var big =
+                                    BigInt.parse(snapshot.data.toString());
+                                var d = toDecimal(big, 6);
+                                return Text("$d");
+                              },
                             ),
+                            Spacer(),
+                            Text(
+                              '200%',
+                              style: TextStyle(
+                                color: Colors.deepPurple[200],
+                                fontSize: 20,
+                                fontWeight: FontWeight.w200,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          'When you add or remove funds the rewards earned will be added to the current staked amount and the rewards balance will be reset.',
+                          style: TextStyle(
+                            color: Colors.blueGrey,
+                            fontSize: 15,
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 120,
-                                height: 30,
-                                child: ElevatedButton(
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 120,
+                              height: 30,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.deepPurple,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10))),
+                                child: Text('Stake'),
+                                onPressed: () async {
+                                  _displayTextInputDialog(context);
+                                },
+                              ),
+                            ),
+                            Spacer(),
+                            Container(
+                              width: 120,
+                              height: 30,
+                              child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                      primary: Colors.deepPurple,
+                                      primary: Colors.deepPurple[100],
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(10))),
-                                  child: Text('Stake'),
-                                  onPressed: () async {
-                                    _displayTextInputDialog(context);
-                                  },
-                                ),
-                              ),
-                              Spacer(),
-                              Container(
-                                width: 120,
-                                height: 30,
-                                child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        primary: Colors.deepPurple[100],
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10))),
-                                    child: Text(
-                                      'Unstake',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                      ),
+                                  child: Text(
+                                    'Unstake',
+                                    style: TextStyle(
+                                      color: Colors.black,
                                     ),
-                                    onPressed: () async {
-                                      var contract3 = Contract(
-                                          tokenFarmAddress, TokenFarmAbi, web3);
-                                      var contract4 =
-                                          contract3.connect(web3.getSigner());
-                                      try {
-                                        var res = await promiseToFuture(
-                                            callMethod(
-                                                contract4, "unstakeToken", []));
-                                        print("Transferred: ${res.toString()}");
-                                      } catch (e) {
-                                        print("EXCEPTION:" + e.toString());
-                                      }
-                                    }),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                    margin: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey[400],
-                            blurRadius: 2.0,
-                            spreadRadius: 0.0,
-                            offset: Offset(2.0, 2.0),
-                          ),
-                        ]),
+                                  ),
+                                  onPressed: () async {
+                                    var contract3 = Contract(
+                                        tokenFarmAddress, TokenFarmAbi, web3);
+                                    var contract4 =
+                                        contract3.connect(web3.getSigner());
+                                    try {
+                                      var res = await promiseToFuture(
+                                          callMethod(
+                                              contract4, "unstakeToken", []));
+                                      print("Transferred: ${res.toString()}");
+                                    } catch (e) {
+                                      print("EXCEPTION:" + e.toString());
+                                    }
+                                  }),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
                   ),
+                  margin: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey[400],
+                          blurRadius: 2.0,
+                          spreadRadius: 0.0,
+                          offset: Offset(2.0, 2.0),
+                        ),
+                      ]),
                 ),
-              ],
-            ),
+              ),
+            ],
           );
   }
 }

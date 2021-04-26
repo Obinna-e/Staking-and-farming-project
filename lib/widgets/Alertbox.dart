@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:normi/components/applyPage.dart';
 
 Widget myListView(BuildContext context) {
   return ListView(
@@ -9,7 +10,10 @@ Widget myListView(BuildContext context) {
       context: context,
       tiles: [
         InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => ApplyPage()));
+          },
           child: ListTile(
             title: Text('Graphics Designer'),
             subtitle: Text("Because I'm really not good"),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:normi/components/applyPage.dart';
 import 'package:normi/components/staking.dart';
 import 'package:normi/providers/walletAdd.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
         routes: {
           MyHomePage.routeName: (ctx) => MyHomePage(),
           StakingPage.routeName: (ctx) => StakingPage(),
+          ApplyPage.routeName: (ctx) => ApplyPage(),
         },
       ),
     );

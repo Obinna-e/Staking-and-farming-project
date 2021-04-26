@@ -12,7 +12,9 @@ class WalletAddress with ChangeNotifier {
     var accounts = await promiseToFuture(
         ethereum.request(RequestParams(method: 'eth_requestAccounts')));
     print(accounts);
-    String se = ethereum.selectedAddress.substring(0, 7) + "...";
+    String se = ethereum.selectedAddress.substring(0, 5) +
+        "..." +
+        ethereum.selectedAddress.substring(37, 41);
     selectedAddress = se;
     isConnected = true;
     notifyListeners();
