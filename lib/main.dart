@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [ChangeNotifierProvider.value(value: WalletAddress())],
       child: MaterialApp(
-        home: MyHomePage(),
+        home: ApplyPage(),
         routes: {
           MyHomePage.routeName: (ctx) => MyHomePage(),
           StakingPage.routeName: (ctx) => StakingPage(),
