@@ -140,13 +140,99 @@ class ApplyPage extends StatelessWidget {
                     Spacer(
                       flex: 2,
                     ),
-                    SizedBox(
+                    //Refactor when finished so this should be automated widget
+                    Container(
                       child: DecoratedBox(
-                        decoration: BoxDecoration(color: Colors.red),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.blueGrey[50]),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(20),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Normi",
+                                    style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            //change to row to align texts better?
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "Visit Website",
+                                style: TextStyle(
+                                  color: Colors.deepPurple[200],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        Colors.deepPurple[300])),
+                                onPressed: () {},
+                                child: Text("Apply for this position"),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                height: 1,
+                                width: 250,
+                                color: Colors.grey[200],
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text("Job Type"),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                "Full-time",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text("Location"),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                "Remote",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text("Date posted"),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                "Apr 1, 2021",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                       width: 300,
-                      height: MediaQuery.of(context).size.height,
-                    )
+                      height: MediaQuery.of(context).size.height * 0.48,
+                    ),
                   ],
                 ),
               )
